@@ -12,6 +12,7 @@
 	implicit none
 ! Variables for the simulation loops
 	integer :: i,j ! for the loops
+! Remember that atom_num is multiplied by the number of processors in MPI
 	integer :: nstate,atom_num,tsteps,idum
 	real*8 :: U_in,gammaP_in,dt_in 
 	real*8 :: state,gammaP,U0,Dfsn,kick,deltaP,jumprate
