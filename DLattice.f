@@ -161,7 +161,7 @@
 
 ! This might be its own section later, but just write the results out
 	   open(unit=21,file='out.dat',position='append')
-	   write(21,*) restmp, U_in
+	   write(21,*) restmp, U_in, GammaP_in
 
 	end if
 
