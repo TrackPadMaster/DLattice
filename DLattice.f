@@ -148,8 +148,8 @@
 	   restmp = restmp/numprocs
 
 ! This might be its own section later, but just write the results out
-	   open(unit=201,file='out.dat',position='append')
-	   write(201,*) restmp, U_in
+	   open(unit=21,file='out.dat',position='append')
+	   write(21,*) restmp, U_in
 
 	end if
 
