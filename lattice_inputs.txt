@@ -1,4 +1,5 @@
 500 ! atom number
 60000 ! time steps
 13 ! Number of potentials
-10.0 ! detuning
+10.0 ! GammaP_in
+0.01 ! dt_in
