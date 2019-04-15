@@ -1,15 +1,19 @@
 	program DLattice
 
 ! Beginning a new version of the DLattice code
-! Starting from scratch here, trying to get a complete understanding
+! This is using my naming scheme and conventions from Fortran 90
+! MPI is included in this, but hardly necessary
+! The code runs very quickly as it doesn't have that many iterations to go through
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ! Start by figuring out the variables we're going to be using
+! This is very different from some of the other sample code we're using
+! I prefer this way even if it's really tedious, using implicit none makes sure there's no rogue variables
 	implicit none
 ! Variables for the simulation loops
 	integer :: i,j ! for the loops
 	integer :: nstate,atom_num,tsteps,idum
-	real*8 :: U_in,gammaP_in,dt_in
+	real*8 :: U_in,gammaP_in,dt_in 
 	real*8 :: state,gammaP,U0,Dfsn,kick,deltaP,jumprate
 	real*8 :: p,z,t,dt
 	real*8 :: ninth,cos2z,rand,gasdev
@@ -37,7 +41,14 @@
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ! Now we'll read from the input files for the program
-! All input files are going to be in the form 1**
+
+! All input files are in 10-series, out in 20-series
+	open(11,file='lattice_inputs.txt')
+	read(11,*) atom_num,tsteps,U_in,GammaP_in,dt_in
+	allocate(U0(U_num))
+	open(12,file='lattice_potentials.txt')	
+	read(12,*) U0
+	allocate(finaltemp(U_num))
 
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
