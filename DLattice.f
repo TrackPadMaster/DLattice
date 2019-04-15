@@ -11,14 +11,15 @@
 ! I prefer this way even if it's really tedious, using implicit none makes sure there's no rogue variables
 	implicit none
 ! Variables for the simulation loops
-	integer :: i,j ! for the loops
+	integer :: i,j,U_num,u ! for the loops
 ! Remember that atom_num is multiplied by the number of processors in MPI
 	integer :: nstate,atom_num,tsteps,idum
-	real*8 :: U_in,gammaP_in,dt_in 
+	real*8 :: gammaP_in,dt_in 
 	real*8 :: state,gammaP,U0,Dfsn,kick,deltaP,jumprate
 	real*8 :: p,z,t,dt
 	real*8 :: ninth,cos2z,rand,gasdev
 	real*8 :: p2sum,restmp,tmpavg
+	real*8, allocatable :: U_Er(:)
 
 ! Variables for MPI
 	integer :: ierr,myid,numprocs
@@ -45,10 +46,12 @@
 
 ! All input files are in 10-series, out in 20-series
 	open(11,file='lattice_inputs.txt')
-	read(11,*) atom_num,tsteps,U_in,GammaP_in,dt_in
-	allocate(U0(U_num))
+	read(11,*) atom_num,tsteps,U_num,GammaP_in,dt_in
+! This is essentially asking how many potentials should we be looking for
+! That way we can use some arbitrary number of potentials
+	allocate(U_Er(U_num))
 	open(12,file='lattice_potentials.txt')	
-	read(12,*) U0
+	read(12,*) U_Er
 	allocate(finaltemp(U_num))
 
 
@@ -82,53 +85,62 @@
 ! E_r = hbar^2 k^2 / 2m & E_r = hbar * w_r ==> E_r = 1/2 and w_r = 1/2
 ! ~U = U0/E_r ==> ~U = 2*U0
 ! So these values we scale to are effectively halved in the code
+! Doing potentials one at a time in the loop
 
-	gammaP = gammaP_in / 2.d0
-	U0 = U_in/2.d0
+	gammaP = gammaP_in * 0.5d0
+	
 ! We also scale the time step with gamma
+! Typical value for dt_in is 0.01
 	dt = dt_in/gammaP
-
-
-! The first loop will scan through our atoms
-	do i = 1,atom_num
+! Are three for loops bad form?
+! Is running scripts for each of these better?
+! I don't really care
+	do u = 1,U_num
+! Remember that ACTUAL potential is half of the value we say
+	U0 = U_Er(u) * 0.5d0
+! The second loop will scan through our atoms
+	   do i = 1,atom_num
 	   
 ! Set the initial conditions for the new atom
-	   p = gasdev(idum)
-	   z = gasdev(idum)
-	   t = 0.d0
+	      p = gasdev(idum)
+	      z = gasdev(idum)
+	      t = 0.d0
 ! And now run through the time steps
-	   do j = 1,tsteps
+	      do j = 1,tsteps
 
-	      cos2z = dcos(2.d0*z)
+	         cos2z = dcos(2.d0*z)
 ! First take into account the diffusion of the atom
-	      Dfsn=(0.1d0*ninth*gammaP)*(35.d0+(state*7*cos2z))
+! This is analytical value assuming ONLY diffusion of same-well
+! Well jump is unlikely in grand scheme of things, also scales inverse with dt
+! Results in sudden VERY large jumps in momentum with very small dt
+	         Dfsn=(0.1d0*ninth*gammaP)*(35.d0+(state*7*cos2z))
 ! Then how much momentum does the atom feel from this
 ! Random direction times the momentum to simulate random direction
-	      kick = gasdev(idum)*(2.d0*Dfsn*dt)**(0.5)
+	         kick = gasdev(idum)*(2.d0*Dfsn*dt)**(0.5)
 ! Total change in momentum is kick and the force from the potential
-	      deltaP = kick + (state*U0*dsin(2.d0*z)*dt)
+	         deltaP = kick + (state*U0*dsin(2.d0*z)*dt)
 ! Now we have to ask if we changed wells or not
 
 ! Probability we jumped in this moment
-	      jumprate = ninth*dt*gammaP*(1+(state*cos2z))
-	      call random_number(rand)
+	         jumprate = ninth*dt*gammaP*(1+(state*cos2z))
+	         call random_number(rand)
 ! Compare and see if we jumped
-	      if (rand .lt. jumprate) then
-	         nstate = -nstate
-	         state = dble(nstate)
-	      end if
+	         if (rand .lt. jumprate) then
+	            nstate = -nstate
+	            state = dble(nstate)
+	         end if
 ! And update the rest of the variables
-	      p = p + deltaP
-	      z = z + p*dt
-	      t = t + dt
+	         p = p + deltaP
+	         z = z + p*dt
+	         t = t + dt
 
 ! For the lattice, we're interested in taking the average of momentum
 ! squared. Easiest way is to take a running sum
-	      p2sum = p*p
-	   end do
+	         p2sum = p*p
+	      end do ! end of time steps
 
-	end do
-
+	   end do ! end of atom loop
+	end do ! end of potentials loop
 
 
 
