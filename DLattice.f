@@ -58,12 +58,20 @@
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ! Now we need a random number generator
-! If we just feed the processors the same seed, they'll produce the
+! *** If we just feed the processors the same seed, they'll produce the
 ! same results for the simulation. This is bad.
 ! So intead, we are going to create seeds for the number generator that
 ! is based on a combination of time and processor ID. That way, the
 ! simulation I run tomorrow is different from today, and each process
-! will be running its own simulation, rather than copying.
+! will be running its own simulation, rather than copying. ***
+
+! I want to leave that previous thing there, but that's not what's happening.
+! By now, we're running multiple processes with MPI
+! Cubero had a great little setup for doing the above, but I'm basic
+! As it turns out, if random_seed finds a generator in the OS, it will use that
+! So my fingers are crossed here that each processor is using that rng on it's own
+! Then we should be all set?
+! I should ACTUALLY test this some time
 
 	call random_seed(size=n)
 	allocate(seed(n))
