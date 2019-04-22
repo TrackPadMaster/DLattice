@@ -40,5 +40,6 @@ Inside the script, you'll notice a variable named "GAMMA" with a number of diffe
 These are all of the Gamma prime values that will be fed into the lattice inputs
 The script will alter the "lattice_inputs.txt" file, then execute the Fortran code for each value of GAMMA
 There is NO EXTRA EFFORT REQUIRED.
+It will save all of the outputs with a name saying which gamma was used
 Put in the values of gamma that you want to run, run the script, and it'll spit out the data file with all of the values you want
 This is the method I'd recommend unless you're testing for bugs in the Fortran.
