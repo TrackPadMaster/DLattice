@@ -14,12 +14,12 @@
 	integer :: i,j,U_num,u ! for the loops
 ! Remember that atom_num is multiplied by the number of processors in MPI
 	integer :: nstate,atom_num,tsteps,idum
-	real*8 :: gammaP_in,dt_in 
+	real*8 :: gammaP_in,dt_in,U_in 
 	real*8 :: state,gammaP,U0,Dfsn,kick,deltaP,jumprate
 	real*8 :: p,z,t,dt
 	real*8 :: ninth,cos2z,rand,gasdev
 	real*8 :: p2sum,restmp,tmpavg
-	real*8, allocatable :: U_Er(:)
+	real*8, allocatable :: U_Er(:),finaltemp(:)
 
 ! Variables for MPI
 	integer :: ierr,myid,numprocs
@@ -50,9 +50,10 @@
 ! This is essentially asking how many potentials should we be looking for
 ! That way we can use some arbitrary number of potentials
 	allocate(U_Er(U_num))
+	allocate(finaltemp(U_num))
 	open(12,file='lattice_potentials.txt')	
 	read(12,*) U_Er
-	allocate(finaltemp(U_num))
+	
 
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -152,9 +153,8 @@
 	tmpavg = p2sum/(atom_num*tsteps)
 
 ! Then, combine from all processes
-	call MPI_REDUCE(tmpavg,restmp,1,MPI_DOUBLE_PRECISION,//&
-       &	MPI_SUM,0,MPI_COMM_WORLD,ierr)
-
+	call MPI_REDUCE(tmpavg,restmp,1,MPI_DOUBLE_PRECISION,
+     &	MPI_SUM,0,MPI_COMM_WORLD,ierr)
 	if (myid.eq.0) then
 ! Now we have restmp with the sum of each averaged temperature
 	   restmp = restmp/numprocs
