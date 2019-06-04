@@ -43,3 +43,16 @@ There is NO EXTRA EFFORT REQUIRED.
 It will save all of the outputs with a name saying which gamma was used
 Put in the values of gamma that you want to run, run the script, and it'll spit out the data file with all of the values you want
 This is the method I'd recommend unless you're testing for bugs in the Fortran.
+
+UPDATE 06/04/19
+So we've at this point spent quite a bit of time looking over the input variables for this whole thing
+As a reminder, since we define hbar, m, and k as 1, that means that recoil frequency and energy are equal to 1/2
+That means that values scaled by this (U0 and GammaPrime) are MULTIPLIED by 1/2
+You might think that a small change in these values would only slightly change the behavior of the lattice
+I seemed to also think that as I searched for bugs and explored
+I was wrong. I was extremely wrong.
+Besides that, the time spent IN lattice is also extremely important, more than I gave it credit for
+Running 10,000 time steps and a time step of 0.01 would NOT show the rise of momentum from spontaneous emission
+This would result in a pretty regular slope upwards, but not the rapid increase when U0 is very small
+Then either changing to 100,000 steps or a larger step (0.1) will both fix this
+My only fear for 0.1 isn't for DLattice, but for the daughter programs that might have fast-frequency terms
