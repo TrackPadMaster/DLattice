@@ -5,14 +5,6 @@
 ! MPI is included in this, but hardly necessary
 ! The code runs very quickly as it doesn't have that many iterations to go through
 
-! Apparently I don't understand how the variables are supposed to be adjusted.
-! Currently, this code is done in a way so that the resulting data comes out right
-! I need to check through all of these equations to actually check how it should be
-
-! Following that, I need to make sure the other versions (DBiharmonic, DMultiFreq, DGating)
-!	are also set up in the same way and not using incorrect values
-! I'm hopeful that this will answer the small differences we've found in those programs.
-
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ! Start by figuring out the variables we're going to be using
 ! This is very different from some of the other sample code we're using
@@ -114,7 +106,7 @@
 	
 ! We also scale the time step with gamma
 ! Typical value for dt_in is 0.01
-	dt = dt_in/gammaP_in
+	dt = dt_in/gammaP
 ! Are three for loops bad form?
 ! Is running scripts for each of these better?
 ! I don't really care

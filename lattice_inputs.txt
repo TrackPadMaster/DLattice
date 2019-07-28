@@ -1,5 +1,5 @@
 1250 ! atom number
 10000 ! time steps
 22 ! Number of potentials
-5.0 ! GammaPin
+15.0 ! GammaPin
 0.05 ! dt_in

@@ -1,11 +1,12 @@
 #!/bin/bash
 
-GAMMA="2.0	3.0	4.0	5.0	7.5	10.0	15.0	20.0	25.0"
+GAMMA="2.0 5.0 10.0 15.0"
 
 for gamma in $GAMMA; do
-	awk -v gamma=$gamma '{if($3 == "Gamma_in:" {print gamma" GammaP_in"} else {print $0}}' lattice_inputs0.txt > lattice_inputs.txt
-	mpirun -n 8 ../DLattice.exe
 	
-	filename='Latticeout_'$gamma'_gamma'
+	awk -v gamma=$gamma '{if($3 == "GammaPin") {print gamma" ! GammaPin"} else {print $0}}' lattice_inputs0.txt > lattice_inputs.txt
+	mpirun -n 4 ./DLattice.exe
+	
+	filename='Latticeout_'$gamma'_gamma.txt'
 	mv ./out.dat ./$filename
 done
