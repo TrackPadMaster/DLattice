@@ -9,8 +9,11 @@ I'll have another sub-section somewhere for downloading and installing that.
 Remember that before running Fortran code, it will need to actually be compiled on your machine.
 I bring this up because some of my machines compile slightly differently, despite being the same?
 
+Assuming you have MPICH on your computer, you can compile the data first by navigating to the directory that the Fortran file is in
+Then, type:
+    mpifort -o DLattice.exe DLattice.f
 Once the code is compiled, you can run some of the shell scripts to make the whole process much less tedious.
-Code should be compiled as "DLattice.exe" so the script can find it
+In order, 'mpifort' calls mpi to compile, '-o' says output it, 'DLattice.exe' is the resulting executable, 'DLattice.f' is the Fotran you want to compile
 
 FOR A SINGLE ITERATION
 Figure out first what you want to run. Set whichever potentials you'd like to use in "lattice_potentials.txt" FIRST.
